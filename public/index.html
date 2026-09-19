@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skincare Marketing Tool</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Skincare Marketing Tool</h1>
+        <p class="sub">Verify your claims against the science, then build the campaign around what survives.</p>
+      </header>
+
+      <!-- ---------------------------------------------------- Section 1 -->
+      <section>
+        <h2>1 &middot; Verification</h2>
+
+        <form id="product-form">
+          <label>
+            Product Name
+            <input id="productName" name="productName" type="text" required
+                   placeholder="Overnight Barrier Repair Cream" />
+          </label>
+
+          <label>
+            Ingredients
+            <textarea id="ingredients" name="ingredients" rows="4" required
+                      placeholder="Water, Glycerin, Niacinamide 5%, Ceramide NP, Squalane, Panthenol..."></textarea>
+          </label>
+
+          <label>
+            Claimed Benefits
+            <textarea id="claims" name="claims" rows="4" required
+                      placeholder="One claim per line:&#10;Reduces the look of redness&#10;Restores the skin barrier overnight&#10;Erases wrinkles permanently"></textarea>
+          </label>
+
+          <label>
+            Brand Voice Sample
+            <textarea id="brandVoice" name="brandVoice" rows="4" required
+                      placeholder="Paste a paragraph of existing copy so the ad sounds like you."></textarea>
+          </label>
+
+          <button id="verify-btn" type="submit">Verify Claims</button>
+        </form>
+
+        <p id="verify-status" class="status" hidden></p>
+        <ul id="claim-list" class="claims" hidden></ul>
+        <div id="gold-star" class="banner" hidden>
+          <span class="star">&#9733;</span>
+          <div>
+            <strong>Gold Star &mdash; Verified</strong>
+            <p>No unsupported claims. Strategy unlocked.</p>
+          </div>
+        </div>
+        <p id="blocked" class="blocked" hidden>
+          Some claims came back <strong>Unsupported</strong>. Revise or remove them, then verify again to unlock
+          the strategy section.
+        </p>
+      </section>
+
+      <!-- ---------------------------------------------------- Section 2 -->
+      <section id="section-two" hidden>
+        <h2>2 &middot; Strategy &amp; Content</h2>
+
+        <p id="strategy-status" class="status" hidden></p>
+
+        <div id="strategy" class="card" hidden>
+          <div class="field">
+            <h3>Target audience</h3>
+            <p id="target-audience"></p>
+          </div>
+          <div class="field">
+            <h3>Their main concern</h3>
+            <p id="main-concern"></p>
+          </div>
+          <div class="field">
+            <h3>Why this product fits</h3>
+            <p id="why-fits"></p>
+          </div>
+        </div>
+
+        <button id="ad-btn" type="button" hidden>Generate Ad</button>
+        <p id="ad-status" class="status" hidden></p>
+        <div id="ad" class="card ad" hidden></div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
