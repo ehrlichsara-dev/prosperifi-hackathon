@@ -1,11 +1,22 @@
 :root {
-  --bg: #faf8f5;
+  --bg: #fdfdfb;
   --surface: #ffffff;
-  --border: #e5ded4;
-  --text: #2c2a27;
-  --muted: #6f6a62;
-  --accent: #3a7d6c;
-  --accent-soft: #eaf3f0;
+  --border: #e4e5dc;
+  --text: #2e2e2b;
+  --muted: #6b6b64;
+
+  /* Sage. The base tone is decorative only — at 2.3:1 on white it is not
+     legible as text, so anything readable uses --accent-deep (4.99:1 with
+     white on top). --accent-strong is the darker press/hover state. */
+  --accent: #9c9f84;
+  --accent-deep: #6b7355;
+  --accent-strong: #555d41;
+  --accent-soft: #f1f2ea;
+  --accent-tint: #f7f8f2;
+  --gold: #f2e3b8;
+
+  --font-head: "Jost", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif;
 }
 
 * {
@@ -17,11 +28,11 @@ body {
   padding: 3rem 1.25rem 6rem;
   background: var(--bg);
   color: var(--text);
-  font: 16px/1.6 ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif;
+  font: 16px/1.65 var(--font-body);
 }
 
 main {
-  max-width: 680px;
+  max-width: 720px;
   margin: 0 auto;
 }
 
@@ -31,8 +42,10 @@ header {
 
 h1 {
   margin: 0 0 0.35rem;
-  font-size: 1.85rem;
-  letter-spacing: -0.02em;
+  font-family: var(--font-head);
+  font-size: 2rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
 }
 
 .sub {
@@ -48,21 +61,87 @@ section {
 
 h2 {
   margin: 0 0 1.25rem;
-  font-size: 0.8rem;
+  font-family: var(--font-head);
+  font-size: 0.82rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-deep);
 }
 
 h3 {
   margin: 0 0 0.25rem;
-  font-size: 0.72rem;
+  font-family: var(--font-head);
+  font-size: 0.74rem;
   font-weight: 600;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
 }
+
+/* -------------------------------------------------------- how it works */
+
+.how {
+  padding: 1.75rem 1.5rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--accent-tint);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature {
+  padding: 1.15rem 1.25rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.feature h3 {
+  margin: 0.85rem 0 0.35rem;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text);
+}
+
+.feature p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+}
+
+.icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 560px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ----------------------------------------------------------------- form */
 
 label {
   display: block;
@@ -88,24 +167,35 @@ textarea {
 
 input:focus,
 textarea:focus {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-deep);
   outline-offset: -1px;
-  border-color: var(--accent);
+  border-color: var(--accent-deep);
 }
 
 button {
-  padding: 0.7rem 1.4rem;
+  padding: 0.85rem 1.75rem;
   border: none;
   border-radius: 8px;
-  background: var(--accent);
+  background: var(--accent-deep);
   color: #fff;
   font: inherit;
+  font-family: var(--font-head);
+  font-size: 1rem;
   font-weight: 600;
+  letter-spacing: 0.03em;
   cursor: pointer;
+  box-shadow: 0 1px 2px rgba(42, 48, 30, 0.22);
+  transition: background-color 120ms ease;
 }
 
+/* Darken on hover — brightening would cut the white-on-sage contrast. */
 button:hover:not(:disabled) {
-  filter: brightness(1.08);
+  background: var(--accent-strong);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
 }
 
 button:disabled {
@@ -148,16 +238,17 @@ button:disabled {
   min-width: 96px;
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
+  font-family: var(--font-head);
   font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: 600;
+  letter-spacing: 0.07em;
   text-align: center;
   text-transform: uppercase;
 }
 
 .badge-supported {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-deep);
 }
 
 .badge-partial {
@@ -188,26 +279,30 @@ button:disabled {
   gap: 0.9rem;
   align-items: center;
   margin-top: 1.75rem;
-  padding: 1rem 1.25rem;
-  border: 1px solid var(--accent);
+  padding: 1.1rem 1.4rem;
   border-radius: 10px;
-  background: var(--accent-soft);
+  background: var(--accent-deep);
+  box-shadow: 0 1px 3px rgba(42, 48, 30, 0.2);
 }
 
 .banner .star {
-  font-size: 1.75rem;
+  font-size: 1.9rem;
   line-height: 1;
-  color: var(--accent);
+  color: var(--gold);
 }
 
 .banner strong {
   display: block;
-  color: var(--accent);
+  font-family: var(--font-head);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
 }
 
 .banner p {
   margin: 0.15rem 0 0;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.86);
   font-size: 0.9rem;
 }
 
@@ -232,11 +327,64 @@ button:disabled {
 }
 
 .field + .field {
-  margin-top: 1.1rem;
+  margin-top: 1.25rem;
 }
 
 .field p {
   margin: 0;
+}
+
+.bullets {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.bullets li + li {
+  margin-top: 0.3rem;
+}
+
+.tier {
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  padding: 0.22rem 0.7rem;
+  border-radius: 999px;
+  background: var(--accent-deep);
+  color: #fff;
+  font-family: var(--font-head);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.examples {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.examples li {
+  padding: 0.6rem 0.9rem;
+  border-left: 2px solid var(--accent);
+  background: var(--accent-tint);
+  border-radius: 0 6px 6px 0;
+}
+
+.examples li + li {
+  margin-top: 0.55rem;
+}
+
+.example-phrase {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Scoped to .field so it outranks the `.field p { margin: 0 }` reset. */
+.field .example-backing {
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 .ad {

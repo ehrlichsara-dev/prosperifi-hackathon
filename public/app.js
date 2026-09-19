@@ -14,11 +14,12 @@ form.addEventListener("submit", async (event) => {
     productName: $("productName").value.trim(),
     ingredients: $("ingredients").value.trim(),
     claims: $("claims").value.trim(),
+    facilityInfo: $("facilityInfo").value.trim(),
     brandVoice: $("brandVoice").value.trim(),
   };
 
   resetResults();
-  setBusy(verifyBtn, true, "Verifying…");
+  setBusy(verifyBtn, true, "Submitting…");
   setStatus("verify-status", "Reviewing each claim against the ingredient list…");
 
   try {
@@ -33,14 +34,14 @@ form.addEventListener("submit", async (event) => {
     }
 
     state = { product, verifiedClaims: claims };
-    show("gold-star");
+    show("certified-banner");
     show("section-two");
     $("section-two").scrollIntoView({ behavior: "smooth", block: "start" });
     await loadStrategy();
   } catch (error) {
     setStatus("verify-status", error.message, true);
   } finally {
-    setBusy(verifyBtn, false, "Verify Claims");
+    setBusy(verifyBtn, false, "Submit for Certification");
   }
 });
 
@@ -80,6 +81,9 @@ async function loadStrategy() {
     $("target-audience").textContent = strategy.target_audience;
     $("main-concern").textContent = strategy.main_concern;
     $("why-fits").textContent = strategy.why_it_fits;
+    renderConcerns(strategy.consumer_concerns);
+    renderPricing(strategy.pricing_positioning);
+    renderExamples(strategy.credible_claim_examples);
 
     clearStatus("strategy-status");
     show("strategy");
@@ -117,9 +121,43 @@ function renderClaims(claims) {
   show("claim-list");
 }
 
+function renderConcerns(concerns) {
+  $("consumer-concerns").replaceChildren(
+    ...concerns.map((concern) => {
+      const item = document.createElement("li");
+      item.textContent = concern;
+      return item;
+    }),
+  );
+}
+
+function renderPricing(pricing) {
+  $("pricing-tier").textContent = pricing.tier;
+  $("pricing-rationale").textContent = pricing.rationale;
+}
+
+function renderExamples(examples) {
+  $("claim-examples").replaceChildren(
+    ...examples.map((example) => {
+      const item = document.createElement("li");
+
+      const phrase = document.createElement("p");
+      phrase.className = "example-phrase";
+      phrase.textContent = `“${example.phrase}”`;
+
+      const backing = document.createElement("p");
+      backing.className = "example-backing";
+      backing.textContent = `Backed by: ${example.backed_by}`;
+
+      item.append(phrase, backing);
+      return item;
+    }),
+  );
+}
+
 function resetResults() {
   state = null;
-  ["claim-list", "gold-star", "blocked", "section-two", "strategy", "ad", "ad-btn"].forEach(hide);
+  ["claim-list", "certified-banner", "blocked", "section-two", "strategy", "ad", "ad-btn"].forEach(hide);
   ["strategy-status", "ad-status"].forEach(clearStatus);
 }
 

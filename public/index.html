@@ -4,6 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Skincare Marketing Tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -12,6 +18,62 @@
         <h1>Skincare Marketing Tool</h1>
         <p class="sub">Verify your claims against the science, then build the campaign around what survives.</p>
       </header>
+
+      <!-- --------------------------------------------------- How it works -->
+      <section class="how">
+        <h2>How it works</h2>
+
+        <ul class="cards">
+          <li class="feature">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="8" r="3.2" />
+                <path d="M2.5 19c0-3.3 2.9-5.4 6.5-5.4s6.5 2.1 6.5 5.4" />
+                <path d="M16.5 5.6a3.2 3.2 0 0 1 0 5.6M18 13.9c2.1.6 3.5 2.3 3.5 4.6" />
+              </svg>
+            </span>
+            <h3>Finds the Audience</h3>
+            <p>Recommends target customer groups based on the product, benefits, and price.</p>
+          </li>
+
+          <li class="feature">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 11.5 20 4.5v15L3 12.5z" />
+                <path d="M7 13v5.5a1.5 1.5 0 0 0 3 0V14" />
+              </svg>
+            </span>
+            <h3>Builds the Positioning</h3>
+            <p>Informs messaging: what to lead with, tone, and how to stay consistent across platforms.</p>
+          </li>
+
+          <li class="feature">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2.8 20 6v6c0 4.5-3.3 7.7-8 9.2-4.7-1.5-8-4.7-8-9.2V6z" />
+                <path d="m8.6 11.8 2.4 2.4 4.4-4.6" />
+              </svg>
+            </span>
+            <h3>Verifies Supported Claims</h3>
+            <p>Uses only verified benefits and ingredients to check claims before they reach marketing copy.</p>
+          </li>
+
+          <li class="feature">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.5 14.5c0 1.4-1.1 2.5-2.5 2.5H9l-4.5 3.5V6c0-1.4 1.1-2.5 2.5-2.5h11c1.4 0 2.5 1.1 2.5 2.5z" />
+                <path d="M12 7.3v4.4M12 14.2h.01" />
+              </svg>
+            </span>
+            <h3>Reviews and Improves Messaging</h3>
+            <p>Flags unsupported or off-brand wording and explains why, with a stronger alternative.</p>
+          </li>
+        </ul>
+      </section>
 
       <!-- ---------------------------------------------------- Section 1 -->
       <section>
@@ -37,32 +99,38 @@
           </label>
 
           <label>
+            Facility / Lab Information
+            <textarea id="facilityInfo" name="facilityInfo" rows="3" required
+                      placeholder="Facility name, location, and any lab certifications you hold&#10;e.g. Northgate Formulations, Portland OR — ISO 22716, cGMP"></textarea>
+          </label>
+
+          <label>
             Brand Voice Sample
             <textarea id="brandVoice" name="brandVoice" rows="4" required
                       placeholder="Paste a paragraph of existing copy so the ad sounds like you."></textarea>
           </label>
 
-          <button id="verify-btn" type="submit">Verify Claims</button>
+          <button id="verify-btn" type="submit">Submit for Certification</button>
         </form>
 
         <p id="verify-status" class="status" hidden></p>
         <ul id="claim-list" class="claims" hidden></ul>
-        <div id="gold-star" class="banner" hidden>
+        <div id="certified-banner" class="banner" hidden>
           <span class="star">&#9733;</span>
           <div>
-            <strong>Gold Star &mdash; Verified</strong>
-            <p>No unsupported claims. Strategy unlocked.</p>
+            <strong>Certified &mdash; ClaimGuard Approved</strong>
+            <p>No unsupported claims. Your certification benefits are unlocked.</p>
           </div>
         </div>
         <p id="blocked" class="blocked" hidden>
-          Some claims came back <strong>Unsupported</strong>. Revise or remove them, then verify again to unlock
-          the strategy section.
+          Some claims came back <strong>Unsupported</strong>. Revise or remove them, then resubmit to earn
+          certification.
         </p>
       </section>
 
       <!-- ---------------------------------------------------- Section 2 -->
       <section id="section-two" hidden>
-        <h2>2 &middot; Strategy &amp; Content</h2>
+        <h2>2 &middot; Certification Benefits</h2>
 
         <p id="strategy-status" class="status" hidden></p>
 
@@ -78,6 +146,19 @@
           <div class="field">
             <h3>Why this product fits</h3>
             <p id="why-fits"></p>
+          </div>
+          <div class="field">
+            <h3>Consumer concerns</h3>
+            <ul id="consumer-concerns" class="bullets"></ul>
+          </div>
+          <div class="field">
+            <h3>Pricing positioning</h3>
+            <p><span id="pricing-tier" class="tier"></span></p>
+            <p id="pricing-rationale"></p>
+          </div>
+          <div class="field">
+            <h3>Credible claim examples</h3>
+            <ul id="claim-examples" class="examples"></ul>
           </div>
         </div>
 

@@ -17,17 +17,29 @@ The API key stays on the server — the browser only talks to this app's own `/a
 
 ## How it works
 
-**Section 1 — Verification.** Product name, ingredients, claimed benefits, and a brand voice sample.
-`POST /api/verify` asks Claude to act as a scientific claim reviewer and rate every claim
-`Supported` / `Partial` / `Unsupported` with a one-sentence reason. Each comes back with a badge.
+**Section 1 — Verification.** Product name, ingredients, claimed benefits, facility / lab
+information, and a brand voice sample. **Submit for Certification** calls `POST /api/verify`, which
+asks Claude to act as a scientific claim reviewer and rate every claim `Supported` / `Partial` /
+`Unsupported` with a one-sentence reason. Each comes back with a badge.
+
+Facility and lab details are carried on the certification record only. The reviewer is explicitly
+told that a certified facility does not make a claim more scientifically supported, so credentials
+can't launder a bad claim into a pass — there's a regression test for this.
 
 If any claim is `Unsupported`, Section 2 stays locked and the page says what to fix. If none are,
-you get the **Gold Star — Verified** banner and Section 2 appears.
+you get the **Certified — ClaimGuard Approved** banner and Section 2 appears.
 
-**Section 2 — Strategy & Content.** Unlocking it immediately calls `POST /api/strategy`, which
-recommends a target audience, their main concern, and why the product fits — reasoning only from
-the claims that passed. **Generate Ad** then calls `POST /api/ad` to write copy in the brand voice,
-restricted to the verified claims (`Partial` ones must be hedged).
+**Section 2 — Certification Benefits.** Unlocking it immediately calls `POST /api/strategy`, which
+returns six fields, all reasoning only from the claims that passed: target audience, their main
+concern, why the product fits, 2–3 consumer concerns, a pricing tier (Budget / Mid-market /
+Premium) with rationale, and 2–3 ready-to-use marketing phrases.
+
+Each marketing phrase carries a `backed_by` tag naming the verified claim behind it. That field is
+a JSON-schema `enum` built per request from this product's actual claims, so a phrase cannot cite
+a benefit that wasn't verified — it's enforced by the schema, not by asking the model.
+
+**Generate Ad** then calls `POST /api/ad` to write copy in the brand voice, restricted to the
+verified claims (`Partial` ones must be hedged).
 
 ## Layout
 

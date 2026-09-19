@@ -35,20 +35,73 @@ const VerificationFormat = jsonSchemaOutputFormat({
   additionalProperties: false,
 });
 
-const StrategyFormat = jsonSchemaOutputFormat({
+// Built per request so `backed_by` can be an enum of this product's actual verified
+// claims — that makes every marketing phrase traceable by construction rather than
+// by asking the model nicely.
+const strategyFormat = (verifiedClaims) =>
+  jsonSchemaOutputFormat({
   type: "object",
   properties: {
     target_audience: { type: "string" },
     main_concern: { type: "string" },
     why_it_fits: { type: "string" },
+    consumer_concerns: {
+      type: "array",
+      minItems: 2,
+      maxItems: 3,
+      description:
+        "Concerns this audience has that this product addresses. Expand on the main concern " +
+        "rather than restating it. One short sentence each.",
+      items: { type: "string" },
+    },
+    pricing_positioning: {
+      type: "object",
+      properties: {
+        tier: { type: "string", enum: ["Budget", "Mid-market", "Premium"] },
+        rationale: {
+          type: "string",
+          description: "One or two sentences tying the tier to the ingredients and verified claims.",
+        },
+      },
+      required: ["tier", "rationale"],
+      additionalProperties: false,
+    },
+    credible_claim_examples: {
+      type: "array",
+      minItems: 2,
+      maxItems: 3,
+      items: {
+        type: "object",
+        properties: {
+          phrase: {
+            type: "string",
+            description: "A short, punchy marketing phrase — at most 8 words, no full sentences.",
+          },
+          backed_by: {
+            type: "string",
+            enum: verifiedClaims.map((c) => c.claim),
+            description: "The verified claim that supports this phrase.",
+          },
+        },
+        required: ["phrase", "backed_by"],
+        additionalProperties: false,
+      },
+    },
   },
-  required: ["target_audience", "main_concern", "why_it_fits"],
+  required: [
+    "target_audience",
+    "main_concern",
+    "why_it_fits",
+    "consumer_concerns",
+    "pricing_positioning",
+    "credible_claim_examples",
+  ],
   additionalProperties: false,
-});
+  });
 
 /* -------------------------------------------------------------- api calls */
 
-async function verifyClaims({ productName, ingredients, claims }) {
+async function verifyClaims({ productName, ingredients, claims, facilityInfo }) {
   const response = await client.messages.parse({
     model: MODEL,
     max_tokens: 8000,
@@ -64,7 +117,10 @@ async function verifyClaims({ productName, ingredients, claims }) {
       "- Unsupported: no ingredient present plausibly produces this effect, or the claim overstates what " +
       "a topical cosmetic can do (e.g. structural, medical, or permanent changes).\n" +
       "Give exactly one sentence of reasoning per claim, naming the relevant ingredient where possible. " +
-      "Return one entry per distinct claim the user listed, quoting each claim close to how it was written.",
+      "Return one entry per distinct claim the user listed, quoting each claim close to how it was written.\n\n" +
+      "Facility and lab information is submitted for the certification record only. A certified facility " +
+      "does not make a claim more scientifically supported — rate every claim purely on the ingredients " +
+      "and the science, exactly as you would with no facility information at all.",
     output_config: { effort: "medium", format: VerificationFormat },
     messages: [
       {
@@ -72,7 +128,9 @@ async function verifyClaims({ productName, ingredients, claims }) {
         content:
           `Product name: ${productName}\n\n` +
           `Ingredients:\n${ingredients}\n\n` +
-          `Claimed benefits:\n${claims}`,
+          `Claimed benefits:\n${claims}\n\n` +
+          `Facility / lab information (certification record only — must not affect any rating):\n` +
+          `${facilityInfo || "Not provided."}`,
       },
     ],
   });
@@ -88,11 +146,21 @@ async function recommendStrategy({ productName, ingredients, verifiedClaims }) {
     thinking: { type: "adaptive" },
     system:
       "You are a skincare brand strategist. Given a product and the claims that survived scientific " +
-      "review, recommend the single best target audience to market it to. Base the recommendation only " +
-      "on the verified claims and the ingredient list — never on a benefit that was not verified. " +
-      "Be specific and concrete: a real segment of people, not 'everyone who wants good skin'. " +
-      "Two to three sentences per field.",
-    output_config: { effort: "low", format: StrategyFormat },
+      "review, recommend the single best target audience to market it to. Base every part of your " +
+      "answer only on the verified claims and the ingredient list — never on a benefit that was not " +
+      "verified. Be specific and concrete: a real segment of people, not 'everyone who wants good skin'. " +
+      "Two to three sentences each for target_audience, main_concern, and why_it_fits.\n\n" +
+      "For pricing_positioning, weigh the ingredient list (actives, their levels, formulation " +
+      "complexity) and how strong the verified claims are — not aspiration.\n\n" +
+      "credible_claim_examples is the strictest field. Every phrase must be copy the brand could " +
+      "legally run tomorrow:\n" +
+      "- Each phrase must trace to one specific verified claim, named in backed_by.\n" +
+      "- Never introduce a benefit, mechanism, or outcome that is not in the verified claim list. " +
+      "Do not name a biological process the claims do not state.\n" +
+      "- A phrase backed by a Partial claim must be hedged ('helps', 'supports') and must not " +
+      "promise a result.\n" +
+      "- Keep them short and punchy — a tagline, not a sentence.",
+    output_config: { effort: "low", format: strategyFormat(verifiedClaims) },
     messages: [
       {
         role: "user",
@@ -152,7 +220,7 @@ function formatClaims(claims) {
 
 const routes = {
   "/api/verify": async (body) => {
-    requireFields(body, ["productName", "ingredients", "claims"]);
+    requireFields(body, ["productName", "ingredients", "claims", "facilityInfo"]);
     return verifyClaims(body);
   },
   "/api/strategy": async (body) => {
